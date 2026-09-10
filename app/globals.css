@@ -1,5 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap');
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { --color-ink: 30 41 35; --color-paper: 251 252 249; --color-brand: 23 61 45; --color-line: 230 235 229; }
+
 :root { --ink: #1e2923; --muted: #829088; --line: #e6ebe5; --paper: #fbfcf9; --cream: #f4f5ee; --green: #173d2d; --mint: #dceee0; --coral: #f5a18c; --yellow: #f7d58a; --blue: #b7d5e3; }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }

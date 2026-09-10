@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { StudioMark } from "./studio-mark";
 
 type Project = {
   title: string;
@@ -36,7 +37,7 @@ export default function Home() {
   return (
     <main className="app-shell">
       <aside className="sidebar">
-        <div className="brand"><span className="brand-mark">B</span><span>badger<span className="brand-muted">studio</span></span></div>
+        <div className="brand"><StudioMark /><span>badger<span className="brand-muted">studio</span></span></div>
         <div className="workspace-switcher"><div className="workspace-icon">N</div><div><strong>Northstar</strong><span>Personal workspace</span></div><span className="chevron">⌄</span></div>
         <nav className="main-nav" aria-label="Main navigation">
           <a className="nav-item active" href="#overview"><span>◈</span> Overview</a>
