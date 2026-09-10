@@ -1,7 +1,7 @@
 "use client";
 
-import { Environment, Float, useGLTF } from "@react-three/drei";
-import { Canvas } from "@react-three/fiber";
+import { Environment, Float, Line, useGLTF } from "@react-three/drei";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ChangeEvent, Suspense, useEffect, useRef, useState } from "react";
@@ -21,6 +21,30 @@ function HoneybadgerHead({
   palette: { coral: string; cyan: string; gold: string };
 }) {
   const group = useRef<THREE.Group>(null);
+  const mouseGroup = useRef<THREE.Group>(null);
+  const { pointer } = useThree();
+
+  useFrame((_, delta) => {
+    if (!mouseGroup.current) return;
+    mouseGroup.current.rotation.y = THREE.MathUtils.damp(
+      mouseGroup.current.rotation.y,
+      pointer.x * 0.32,
+      4,
+      delta,
+    );
+    mouseGroup.current.rotation.x = THREE.MathUtils.damp(
+      mouseGroup.current.rotation.x,
+      pointer.y * -0.16,
+      4,
+      delta,
+    );
+    mouseGroup.current.position.x = THREE.MathUtils.damp(
+      mouseGroup.current.position.x,
+      pointer.x * 0.12,
+      4,
+      delta,
+    );
+  });
 
   useEffect(() => {
     if (!group.current) return;
@@ -32,7 +56,7 @@ function HoneybadgerHead({
         z: -0.25,
         ease: "none",
         scrollTrigger: {
-          trigger: ".agency-hero",
+          trigger: ".landing-hero",
           start: "top top",
           end: "bottom top",
           scrub: 1.2,
@@ -45,104 +69,174 @@ function HoneybadgerHead({
 
   return (
     <group ref={group} position={[0, 0.38, 0]} rotation={[0.06, -0.22, 0.02]}>
-      <Float speed={1.1} rotationIntensity={0.08} floatIntensity={0.28}>
-        <mesh scale={[1.45, 1.15, 1.1]}>
-          <icosahedronGeometry args={[1.1, 3]} />
-          <meshStandardMaterial
-            color="#16181d"
-            roughness={0.72}
-            metalness={0.04}
-          />
-        </mesh>
-        <mesh
-          position={[-1.02, 0.72, 0]}
-          rotation={[0, 0, -0.35]}
-          scale={[0.48, 0.62, 0.32]}
-        >
-          <sphereGeometry args={[1, 24, 16]} />
-          <meshStandardMaterial color="#20242a" roughness={0.8} />
-        </mesh>
-        <mesh
-          position={[1.02, 0.72, 0]}
-          rotation={[0, 0, 0.35]}
-          scale={[0.48, 0.62, 0.32]}
-        >
-          <sphereGeometry args={[1, 24, 16]} />
-          <meshStandardMaterial color="#20242a" roughness={0.8} />
-        </mesh>
-        <mesh position={[0, 0.55, 1.02]} scale={[0.33, 0.78, 0.14]}>
-          <sphereGeometry args={[1, 24, 16]} />
-          <meshStandardMaterial color={palette.gold} roughness={0.62} />
-        </mesh>
-        <mesh position={[-0.47, 0.14, 0.98]} scale={[0.3, 0.22, 0.13]}>
-          <sphereGeometry args={[1, 24, 16]} />
-          <meshStandardMaterial color="#d7d6d0" roughness={0.55} />
-        </mesh>
-        <mesh position={[0.47, 0.14, 0.98]} scale={[0.3, 0.22, 0.13]}>
-          <sphereGeometry args={[1, 24, 16]} />
-          <meshStandardMaterial color="#d7d6d0" roughness={0.55} />
-        </mesh>
-        <mesh position={[-0.42, 0.25, 1.13]} scale={[0.12, 0.14, 0.07]}>
-          <sphereGeometry args={[1, 20, 12]} />
-          <meshStandardMaterial
-            color={palette.cyan}
-            emissive={palette.cyan}
-            emissiveIntensity={0.5}
-          />
-        </mesh>
-        <mesh position={[0.42, 0.25, 1.13]} scale={[0.12, 0.14, 0.07]}>
-          <sphereGeometry args={[1, 20, 12]} />
-          <meshStandardMaterial
-            color={palette.cyan}
-            emissive={palette.cyan}
-            emissiveIntensity={0.5}
-          />
-        </mesh>
-        <mesh position={[0, -0.28, 1.13]} scale={[0.7, 0.36, 0.28]}>
-          <sphereGeometry args={[1, 24, 16]} />
-          <meshStandardMaterial color="#d7d6d0" roughness={0.58} />
-        </mesh>
-        <mesh position={[0, -0.42, 1.42]} scale={[0.18, 0.12, 0.12]}>
-          <sphereGeometry args={[1, 20, 12]} />
-          <meshStandardMaterial color="#07080a" roughness={0.3} />
-        </mesh>
-        <mesh
-          position={[0, -0.58, 1.13]}
-          rotation={[Math.PI / 2, 0, 0]}
-          scale={[0.42, 0.42, 0.1]}
-        >
-          <torusGeometry args={[1, 0.12, 12, 32, Math.PI]} />
-          <meshStandardMaterial color="#050609" roughness={0.45} />
-        </mesh>
-        <mesh position={[0, -1.02, 1.15]}>
-          <cylinderGeometry args={[0.025, 0.025, 0.9, 10]} />
-          <meshStandardMaterial
-            color={palette.coral}
-            emissive={palette.coral}
-            emissiveIntensity={0.2}
-          />
-        </mesh>
-        <mesh position={[0, -1.56, 1.15]}>
-          <cylinderGeometry args={[0.22, 0.16, 0.22, 20]} />
-          <meshStandardMaterial color="#b8a58e" roughness={0.5} />
-        </mesh>
-        <mesh position={[0, -1.97, 1.15]} scale={[0.42, 0.54, 0.42]}>
-          <sphereGeometry args={[1, 24, 16]} />
-          <meshStandardMaterial
-            color={palette.coral}
-            emissive={palette.coral}
-            emissiveIntensity={2.2}
+      <group ref={mouseGroup}>
+        <Float speed={1.1} rotationIntensity={0.08} floatIntensity={0.28}>
+          <mesh scale={[1.45, 1.15, 1.1]}>
+            <icosahedronGeometry args={[1.1, 3]} />
+            <meshStandardMaterial
+              color="#16181d"
+              roughness={0.72}
+              metalness={0.04}
+            />
+          </mesh>
+          <mesh
+            position={[-1.02, 0.72, 0]}
+            rotation={[0, 0, -0.35]}
+            scale={[0.48, 0.62, 0.32]}
+          >
+            <sphereGeometry args={[1, 24, 16]} />
+            <meshStandardMaterial color="#20242a" roughness={0.8} />
+          </mesh>
+          <mesh
+            position={[-1.02, 0.72, 0.28]}
+            rotation={[0, 0, -0.35]}
+            scale={[0.27, 0.38, 0.14]}
+          >
+            <sphereGeometry args={[1, 20, 14]} />
+            <meshStandardMaterial color="#8d4c58" roughness={0.65} />
+          </mesh>
+          <mesh
+            position={[1.02, 0.72, 0.28]}
+            rotation={[0, 0, 0.35]}
+            scale={[0.27, 0.38, 0.14]}
+          >
+            <sphereGeometry args={[1, 20, 14]} />
+            <meshStandardMaterial color="#8d4c58" roughness={0.65} />
+          </mesh>
+          <mesh
+            position={[1.02, 0.72, 0]}
+            rotation={[0, 0, 0.35]}
+            scale={[0.48, 0.62, 0.32]}
+          >
+            <sphereGeometry args={[1, 24, 16]} />
+            <meshStandardMaterial color="#20242a" roughness={0.8} />
+          </mesh>
+          <mesh position={[0, 0.55, 1.02]} scale={[0.33, 0.78, 0.14]}>
+            <sphereGeometry args={[1, 24, 16]} />
+            <meshStandardMaterial color={palette.gold} roughness={0.62} />
+          </mesh>
+          <mesh position={[-0.47, 0.14, 0.98]} scale={[0.3, 0.22, 0.13]}>
+            <sphereGeometry args={[1, 24, 16]} />
+            <meshStandardMaterial color="#d7d6d0" roughness={0.55} />
+          </mesh>
+          <mesh position={[0.47, 0.14, 0.98]} scale={[0.3, 0.22, 0.13]}>
+            <sphereGeometry args={[1, 24, 16]} />
+            <meshStandardMaterial color="#d7d6d0" roughness={0.55} />
+          </mesh>
+          <mesh position={[-0.42, 0.25, 1.13]} scale={[0.17, 0.18, 0.08]}>
+            <sphereGeometry args={[1, 20, 12]} />
+            <meshStandardMaterial color="#d6d1b9" roughness={0.4} />
+          </mesh>
+          <mesh position={[0.42, 0.25, 1.13]} scale={[0.17, 0.18, 0.08]}>
+            <sphereGeometry args={[1, 20, 12]} />
+            <meshStandardMaterial color="#d6d1b9" roughness={0.4} />
+          </mesh>
+          <mesh position={[-0.42, 0.25, 1.2]} scale={[0.07, 0.08, 0.05]}>
+            <sphereGeometry args={[1, 20, 12]} />
+            <meshStandardMaterial
+              color={palette.cyan}
+              emissive={palette.cyan}
+              emissiveIntensity={0.8}
+            />
+          </mesh>
+          <mesh position={[0.42, 0.25, 1.2]} scale={[0.07, 0.08, 0.05]}>
+            <sphereGeometry args={[1, 20, 12]} />
+            <meshStandardMaterial
+              color={palette.cyan}
+              emissive={palette.cyan}
+              emissiveIntensity={0.8}
+            />
+          </mesh>
+          <mesh position={[0, -0.28, 1.13]} scale={[0.7, 0.36, 0.28]}>
+            <sphereGeometry args={[1, 24, 16]} />
+            <meshStandardMaterial color="#d7d6d0" roughness={0.58} />
+          </mesh>
+          <mesh position={[0, -0.42, 1.42]} scale={[0.18, 0.12, 0.12]}>
+            <sphereGeometry args={[1, 20, 12]} />
+            <meshStandardMaterial color="#07080a" roughness={0.3} />
+          </mesh>
+          <mesh
+            position={[0, -0.58, 1.13]}
+            rotation={[Math.PI / 2, 0, 0]}
+            scale={[0.42, 0.42, 0.1]}
+          >
+            <torusGeometry args={[1, 0.12, 12, 32, Math.PI]} />
+            <meshStandardMaterial color="#050609" roughness={0.45} />
+          </mesh>
+          <Line
+            points={[
+              [-0.45, -0.32, 1.2],
+              [-1.2, -0.2, 1.12],
+              [-1.65, -0.35, 1.03],
+            ]}
+            color={palette.gold}
+            lineWidth={0.7}
             transparent
-            opacity={0.92}
+            opacity={0.55}
           />
-        </mesh>
-        <pointLight
-          position={[0, -1.95, 1.25]}
-          color={palette.coral}
-          intensity={3.5}
-          distance={4}
-        />
-      </Float>
+          <Line
+            points={[
+              [0.45, -0.32, 1.2],
+              [1.2, -0.2, 1.12],
+              [1.65, -0.35, 1.03],
+            ]}
+            color={palette.gold}
+            lineWidth={0.7}
+            transparent
+            opacity={0.55}
+          />
+          <Line
+            points={[
+              [-0.42, -0.42, 1.2],
+              [-1.08, -0.58, 1.08],
+              [-1.5, -0.8, 1.01],
+            ]}
+            color={palette.gold}
+            lineWidth={0.7}
+            transparent
+            opacity={0.45}
+          />
+          <Line
+            points={[
+              [0.42, -0.42, 1.2],
+              [1.08, -0.58, 1.08],
+              [1.5, -0.8, 1.01],
+            ]}
+            color={palette.gold}
+            lineWidth={0.7}
+            transparent
+            opacity={0.45}
+          />
+          <mesh position={[0, -1.02, 1.15]}>
+            <cylinderGeometry args={[0.025, 0.025, 0.9, 10]} />
+            <meshStandardMaterial
+              color={palette.coral}
+              emissive={palette.coral}
+              emissiveIntensity={0.2}
+            />
+          </mesh>
+          <mesh position={[0, -1.56, 1.15]}>
+            <cylinderGeometry args={[0.22, 0.16, 0.22, 20]} />
+            <meshStandardMaterial color="#b8a58e" roughness={0.5} />
+          </mesh>
+          <mesh position={[0, -1.97, 1.15]} scale={[0.42, 0.54, 0.42]}>
+            <sphereGeometry args={[1, 24, 16]} />
+            <meshStandardMaterial
+              color={palette.coral}
+              emissive={palette.coral}
+              emissiveIntensity={2.2}
+              transparent
+              opacity={0.92}
+            />
+          </mesh>
+          <pointLight
+            position={[0, -1.95, 1.25]}
+            color={palette.coral}
+            intensity={3.5}
+            distance={4}
+          />
+        </Float>
+      </group>
     </group>
   );
 }

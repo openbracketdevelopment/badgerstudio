@@ -527,6 +527,10 @@
   display: flex;
   gap: 7px;
 }
+.testimonial-controls {
+  display: flex;
+  gap: 7px;
+}
 .testimonial-top button {
   display: grid;
   width: 27px;
@@ -537,9 +541,33 @@
   color: var(--ink);
   background: transparent;
 }
+.testimonial-top button:focus-visible,
+.testimonial-dots button:focus-visible {
+  outline: 2px solid var(--pink);
+  outline-offset: 3px;
+}
+.testimonial-viewport {
+  width: 100%;
+  max-width: 100%;
+  margin-top: 33px;
+  overflow: hidden;
+  contain: layout paint;
+  touch-action: pan-y pinch-zoom;
+}
+.testimonial-container {
+  display: flex;
+  width: 100%;
+  will-change: transform;
+}
+.testimonial-slide {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  flex: 0 0 100%;
+}
 .testimonial-block blockquote {
   max-width: 600px;
-  margin: 33px 0 25px;
+  margin: 0 0 25px;
   color: var(--ink);
   font:
     700 clamp(29px, 4vw, 54px)/0.93 Georgia,
@@ -577,6 +605,27 @@
   margin-top: 3px;
   color: var(--muted);
   font-size: 8px;
+}
+.testimonial-dots {
+  display: flex;
+  gap: 7px;
+  margin-top: 30px;
+}
+.testimonial-dots button {
+  width: 6px;
+  height: 6px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--line);
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+.testimonial-dots button.active {
+  transform: scale(1.45);
+  background: var(--pink);
 }
 .mountain-block {
   position: relative;

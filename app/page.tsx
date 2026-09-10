@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AgencyScene, ModelDropzone } from "../components/agency-scene";
+import { TestimonialSlider } from "../components/testimonial-slider";
 import { StudioMark } from "./studio-mark";
 
 const services = [
@@ -264,26 +265,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="testimonial-block landing-reveal" id="about">
-        <div className="testimonial-top">
-          <span>TESTIMONIALS</span>
-          <div>
-            <button aria-label="Previous testimonial">←</button>
-            <button aria-label="Next testimonial">→</button>
-          </div>
-        </div>
-        <blockquote>
-          “Badger Studio turned our vision into a product that actually
-          delivers.”
-        </blockquote>
-        <div className="testimonial-person">
-          <div className="person-avatar">SK</div>
-          <div>
-            <strong>Sarah K.</strong>
-            <span>Product Manager, Fidium</span>
-          </div>
-        </div>
-      </section>
+      <TestimonialSlider />
 
       <section className="mountain-block">
         <div className="mountain-sky" />
