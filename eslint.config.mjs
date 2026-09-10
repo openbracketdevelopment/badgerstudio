@@ -4,7 +4,14 @@ import tseslint from "typescript-eslint";
 
 const eslintConfig = [
   {
-    ignores: [".next/**", "node_modules/**", "out/**", "next-env.d.ts"],
+    ignores: [
+      ".next/**",
+      "node_modules/**",
+      "out/**",
+      "storybook-static/**",
+      "coverage/**",
+      "next-env.d.ts",
+    ],
   },
   ...nextWebVitals,
   ...nextTypescript,

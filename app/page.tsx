@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { ScrollScene } from "../components/scroll-scene";
 import { StudioMark } from "./studio-mark";
 
 type Project = {
@@ -190,6 +191,8 @@ export default function Home() {
             <span className="metric-trend">Field Notes · 4 days</span>
           </div>
         </div>
+
+        <ScrollScene />
 
         <section className="projects-section" id="projects">
           <div className="section-header">
