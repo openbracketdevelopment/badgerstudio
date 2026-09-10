@@ -6,6 +6,8 @@
 .pnp.js
 
 # testing
+coverage
+storybook-static
 /coverage
 
 # next.js
