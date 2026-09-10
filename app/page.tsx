@@ -5,7 +5,6 @@ import {
   ArrowRight,
   Instagram,
   Linkedin,
-  Menu,
   MoveUpRight,
   Play,
   Twitter,
@@ -56,6 +55,8 @@ export default function Home() {
   const pageRef = useRef<HTMLElement>(null);
   const [isDark, setIsDark] = useState(true);
   const [modelUrl, setModelUrl] = useState<string | null>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isNavVisible, setIsNavVisible] = useState(true);
 
   const handleModelChange = useCallback((url: string | null) => {
     setModelUrl((previousUrl) => {
@@ -83,12 +84,44 @@ export default function Home() {
     return () => context.revert();
   }, []);
 
+  useEffect(() => {
+    document.body.style.overflow = isMenuOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMenuOpen]);
+
+  useEffect(() => {
+    let previousScrollY = window.scrollY;
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      const scrollingUp = currentScrollY < previousScrollY;
+      setIsNavVisible(currentScrollY < 24 || scrollingUp);
+      previousScrollY = currentScrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsMenuOpen(false);
+    };
+
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, []);
+
+  const closeMenu = () => setIsMenuOpen(false);
+
   return (
     <main
       ref={pageRef}
       className={`landing-page ${isDark ? "theme-dark" : "theme-light"}`}
     >
-      <header className="landing-nav">
+      <header className={`landing-nav ${isNavVisible ? "" : "nav-hidden"}`}>
         <a className="landing-logo" href="#top" aria-label="Badger Studio home">
           <StudioMark />
           <span>
@@ -119,14 +152,50 @@ export default function Home() {
             Let&apos;s build <MoveUpRight size={13} />
           </a>
           <button
-            className="landing-mobile-menu"
+            className={`landing-mobile-menu ${isMenuOpen ? "is-open" : ""}`}
             type="button"
-            aria-label="Open menu"
+            aria-expanded={isMenuOpen}
+            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            onClick={() => setIsMenuOpen((value) => !value)}
           >
-            <Menu size={19} />
+            <span />
+            <span />
+            <span />
           </button>
         </div>
       </header>
+
+      <div
+        className={`mobile-menu-panel ${isMenuOpen ? "is-open" : ""}`}
+        role="dialog"
+        aria-modal="true"
+        aria-hidden={!isMenuOpen}
+        aria-label="Mobile navigation"
+        onClick={(event) => {
+          if (event.target === event.currentTarget) closeMenu();
+        }}
+      >
+        <nav aria-label="Mobile primary navigation">
+          <a href="#services" onClick={closeMenu}>
+            Work <MoveUpRight size={18} />
+          </a>
+          <a href="#services" onClick={closeMenu}>
+            Services <MoveUpRight size={18} />
+          </a>
+          <a href="#about" onClick={closeMenu}>
+            About <MoveUpRight size={18} />
+          </a>
+          <a href="#process" onClick={closeMenu}>
+            Process <MoveUpRight size={18} />
+          </a>
+          <a href="#work" onClick={closeMenu}>
+            Journal <MoveUpRight size={18} />
+          </a>
+          <a href="#contact" onClick={closeMenu}>
+            Contact <MoveUpRight size={18} />
+          </a>
+        </nav>
+      </div>
 
       <section className="landing-hero" id="top">
         <div className="hero-copy-wrap">
