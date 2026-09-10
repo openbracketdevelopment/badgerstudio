@@ -1,357 +1,291 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { ScrollScene } from "../components/scroll-scene";
+import gsap from "gsap";
+import { ArrowDownRight, ArrowUpRight, Menu } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { AgencyScene, ModelDropzone } from "../components/agency-scene";
 import { StudioMark } from "./studio-mark";
 
-type Project = {
-  title: string;
-  client: string;
-  type: string;
-  status: "In review" | "In progress" | "Planning";
-  progress: number;
-  accent: string;
-  shape: string;
-  updated: string;
-};
-
-const projects: Project[] = [
+const services = [
   {
-    title: "Field Notes",
-    client: "Northstar Coffee",
-    type: "Brand system",
-    status: "In review",
-    progress: 82,
-    accent: "sage",
-    shape: "arch",
-    updated: "2h ago",
+    number: "01",
+    title: "Brand worlds",
+    copy: "Positioning, identity systems, and the visual language that gives a good idea a point of view.",
+    tag: "Strategy + identity",
   },
   {
-    title: "Good Ground",
-    client: "Good Ground Farms",
-    type: "Packaging",
-    status: "In progress",
-    progress: 54,
-    accent: "coral",
-    shape: "circle",
-    updated: "Yesterday",
+    number: "02",
+    title: "Digital experiences",
+    copy: "Websites and products that feel considered in every interaction, from the first scroll to the last click.",
+    tag: "UX + development",
   },
   {
-    title: "New Rituals",
-    client: "Morrow Health",
-    type: "Campaign",
-    status: "In progress",
-    progress: 38,
-    accent: "blue",
-    shape: "bars",
-    updated: "2 days ago",
-  },
-  {
-    title: "Sunroom",
-    client: "Internal project",
-    type: "Editorial",
-    status: "Planning",
-    progress: 16,
-    accent: "yellow",
-    shape: "square",
-    updated: "3 days ago",
+    number: "03",
+    title: "Motion + 3D",
+    copy: "Living identities, cinematic launches, and dimensional moments that make your work hard to forget.",
+    tag: "Animation + 3D",
   },
 ];
 
-const filters = ["All projects", "In progress", "In review", "Planning"];
+const projects = [
+  {
+    client: "Morrow Health",
+    title: "A new ritual for everyday care",
+    type: "Brand + digital",
+    color: "project-saffron",
+  },
+  {
+    client: "Northstar Coffee",
+    title: "A place to slow down",
+    type: "Identity + packaging",
+    color: "project-sage",
+  },
+  {
+    client: "Good Ground Farms",
+    title: "Grown with intention",
+    type: "Packaging + campaign",
+    color: "project-coral",
+  },
+];
 
 export default function Home() {
-  const [activeFilter, setActiveFilter] = useState("All projects");
-  const [showBrief, setShowBrief] = useState(false);
-  const [query, setQuery] = useState("");
+  const pageRef = useRef<HTMLElement>(null);
+  const [modelUrl, setModelUrl] = useState<string | null>(null);
 
-  const visibleProjects = useMemo(
-    () =>
-      projects.filter((project) => {
-        const matchesFilter =
-          activeFilter === "All projects" || project.status === activeFilter;
-        const search = query.trim().toLowerCase();
-        return (
-          matchesFilter &&
-          (!search ||
-            `${project.title} ${project.client}`.toLowerCase().includes(search))
-        );
-      }),
-    [activeFilter, query],
-  );
+  const handleModelChange = useCallback((url: string | null) => {
+    setModelUrl((previousUrl) => {
+      if (previousUrl) URL.revokeObjectURL(previousUrl);
+      return url;
+    });
+  }, []);
+
+  useEffect(() => {
+    const context = gsap.context(() => {
+      gsap.from(".hero-kicker, .hero-title-line, .hero-copy, .hero-actions", {
+        y: 26,
+        opacity: 0,
+        duration: 0.9,
+        stagger: 0.08,
+        ease: "power3.out",
+        delay: 0.15,
+      });
+
+      gsap.from(".hero-art", {
+        scale: 0.92,
+        opacity: 0,
+        duration: 1.2,
+        ease: "power3.out",
+        delay: 0.15,
+      });
+
+      gsap.utils.toArray<HTMLElement>(".reveal").forEach((element) => {
+        gsap.from(element, {
+          y: 44,
+          opacity: 0,
+          duration: 0.85,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: element,
+            start: "top 84%",
+            once: true,
+          },
+        });
+      });
+
+      gsap.to(".hero-orbit", {
+        rotation: 360,
+        duration: 26,
+        repeat: -1,
+        ease: "none",
+      });
+    }, pageRef);
+
+    return () => context.revert();
+  }, []);
 
   return (
-    <main className="app-shell">
-      <aside className="sidebar">
-        <div className="brand">
+    <main ref={pageRef} className="agency-page">
+      <header className="agency-nav">
+        <a className="agency-brand" href="#top" aria-label="Badger Studio home">
           <StudioMark />
           <span>
             badger<span className="brand-muted">studio</span>
           </span>
-        </div>
-        <div className="workspace-switcher">
-          <div className="workspace-icon">N</div>
-          <div>
-            <strong>Northstar</strong>
-            <span>Personal workspace</span>
-          </div>
-          <span className="chevron">⌄</span>
-        </div>
-        <nav className="main-nav" aria-label="Main navigation">
-          <a className="nav-item active" href="#overview">
-            <span>◈</span> Overview
-          </a>
-          <a className="nav-item" href="#projects">
-            <span>▦</span> Projects <b>4</b>
-          </a>
-          <a className="nav-item" href="#calendar">
-            <span>□</span> Calendar
-          </a>
-          <a className="nav-item" href="#notes">
-            <span>✧</span> Notes
-          </a>
+        </a>
+        <nav className="agency-links" aria-label="Primary navigation">
+          <a href="#services">Services</a>
+          <a href="#work">Work</a>
+          <a href="#about">About</a>
         </nav>
-        <div className="sidebar-bottom">
-          <a className="nav-item" href="#settings">
-            <span>⚙</span> Settings
-          </a>
-          <div className="profile">
-            <div className="avatar">TM</div>
-            <div>
-              <strong>Taylor Morgan</strong>
-              <span>Admin</span>
-            </div>
-            <span className="more">•••</span>
+        <a className="nav-contact" href="#contact">
+          Start a project <ArrowUpRight size={15} aria-hidden="true" />
+        </a>
+        <button className="mobile-menu" type="button" aria-label="Open menu">
+          <Menu size={20} />
+        </button>
+      </header>
+
+      <section className="agency-hero" id="top">
+        <div className="hero-content">
+          <p className="hero-kicker">
+            <span className="status-dot" /> Independent brand + digital studio ·
+            Est. 2024
+          </p>
+          <h1 className="hero-title">
+            <span className="hero-title-line">Make your</span>
+            <span className="hero-title-line hero-title-accent">
+              mark <em>matter.</em>
+            </span>
+          </h1>
+          <p className="hero-copy">
+            Badger Studio builds brave identities and expressive digital
+            experiences for people making the next good thing.
+          </p>
+          <div className="hero-actions">
+            <a className="button button-dark" href="#work">
+              See our work <ArrowDownRight size={17} aria-hidden="true" />
+            </a>
+            <a className="button button-quiet" href="#services">
+              What we do <ArrowDownRight size={17} aria-hidden="true" />
+            </a>
           </div>
         </div>
-      </aside>
-
-      <section className="content" id="overview">
-        <header className="topbar">
-          <div className="breadcrumb">
-            <span>Workspace</span>
-            <i>/</i>
-            <strong>Overview</strong>
-          </div>
-          <div className="top-actions">
-            <label className="search">
-              <span>⌕</span>
-              <input
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search"
-                aria-label="Search projects"
-              />
-              <kbd>⌘ K</kbd>
-            </label>
-            <button className="icon-button" aria-label="Notifications">
-              ♧<span className="notification-dot" />
-            </button>
-            <button className="new-button" onClick={() => setShowBrief(true)}>
-              <span>＋</span> New brief
-            </button>
-          </div>
-        </header>
-
-        <div className="page-heading">
-          <div>
-            <p className="eyebrow">THURSDAY, SEPTEMBER 10, 2026</p>
-            <h1>
-              Good morning, Taylor<span className="sun">✳</span>
-            </h1>
-            <p className="subheading">
-              Here&apos;s what&apos;s moving across your studio.
-            </p>
-          </div>
-          <div className="heading-note">
-            <span className="note-pin">✦</span>
-            <div>
-              <strong>One thing at a time.</strong>
-              <p>Small progress is still progress.</p>
-            </div>
+        <div className="hero-art">
+          <div className="hero-orbit orbit-one" />
+          <div className="hero-orbit orbit-two" />
+          <AgencyScene modelUrl={modelUrl} />
+          <div className="hero-art-label">
+            <span>Current mood</span>
+            <strong>Curious / precise</strong>
           </div>
         </div>
-
-        <div className="metrics">
-          <div className="metric">
-            <span className="metric-label">Active projects</span>
-            <strong>04</strong>
-            <span className="metric-trend up">↗ 2 this month</span>
-          </div>
-          <div className="metric">
-            <span className="metric-label">Hours this week</span>
-            <strong>
-              28<span className="metric-unit">h</span>
-            </strong>
-            <span className="metric-trend">↗ 12% from last week</span>
-          </div>
-          <div className="metric">
-            <span className="metric-label">Next deadline</span>
-            <strong className="deadline">Sep 14</strong>
-            <span className="metric-trend">Field Notes · 4 days</span>
-          </div>
+        <div className="hero-scroll">
+          <ArrowDownRight size={17} aria-hidden="true" />
+          <span>Scroll to explore</span>
         </div>
-
-        <ScrollScene />
-
-        <section className="projects-section" id="projects">
-          <div className="section-header">
-            <div>
-              <h2>Your projects</h2>
-              <p>Keep the good work moving.</p>
-            </div>
-            <button className="text-button">
-              View all <span>→</span>
-            </button>
-          </div>
-          <div className="filter-row" role="tablist">
-            {filters.map((filter) => (
-              <button
-                key={filter}
-                role="tab"
-                aria-selected={activeFilter === filter}
-                className={`filter ${activeFilter === filter ? "selected" : ""}`}
-                onClick={() => setActiveFilter(filter)}
-              >
-                {filter}
-              </button>
-            ))}
-          </div>
-          <div className="project-grid">
-            {visibleProjects.map((project) => (
-              <article className="project-card" key={project.title}>
-                <div className={`project-art ${project.accent}`}>
-                  <div className={`art-shape ${project.shape}`} />
-                  <span className="art-label">{project.type}</span>
-                  <button
-                    className="card-menu"
-                    aria-label={`More options for ${project.title}`}
-                  >
-                    •••
-                  </button>
-                </div>
-                <div className="project-info">
-                  <div>
-                    <h3>{project.title}</h3>
-                    <p>{project.client}</p>
-                  </div>
-                  <span
-                    className={`status ${project.status.toLowerCase().replace(" ", "-")}`}
-                  >
-                    {project.status}
-                  </span>
-                </div>
-                <div className="progress-row">
-                  <div className="progress-track">
-                    <div
-                      className="progress-bar"
-                      style={{ width: `${project.progress}%` }}
-                    />
-                  </div>
-                  <span>{project.progress}%</span>
-                  <time>{project.updated}</time>
-                </div>
-              </article>
-            ))}
-          </div>
-          {visibleProjects.length === 0 && (
-            <div className="empty-state">No projects match this view.</div>
-          )}
-        </section>
-
-        <section className="bottom-grid">
-          <div className="activity-panel" id="notes">
-            <div className="section-header">
-              <div>
-                <h2>Recent activity</h2>
-                <p>The latest from your workspace.</p>
-              </div>
-              <button className="text-button">
-                See all <span>→</span>
-              </button>
-            </div>
-            <div className="activity-list">
-              <div className="activity-item">
-                <div className="activity-avatar coral-bg">JB</div>
-                <p>
-                  <strong>Jamie Bell</strong> commented on <b>Field Notes</b>
-                  <span>
-                    “The warmer direction feels right. Let&apos;s push that
-                    forward.”
-                  </span>
-                </p>
-                <time>24 min ago</time>
-              </div>
-              <div className="activity-item">
-                <div className="activity-avatar yellow-bg">TM</div>
-                <p>
-                  You moved <b>Good Ground</b> to <strong>In progress</strong>
-                  <span>Packaging exploration is underway.</span>
-                </p>
-                <time>Yesterday</time>
-              </div>
-              <div className="activity-item">
-                <div className="activity-avatar blue-bg">AR</div>
-                <p>
-                  <strong>Alex Rivera</strong> shared a new file in{" "}
-                  <b>New Rituals</b>
-                  <span>rituals_campaign_v04.fig</span>
-                </p>
-                <time>2 days ago</time>
-              </div>
-            </div>
-          </div>
-          <div className="focus-panel">
-            <div className="focus-kicker">A SMALL MOMENT</div>
-            <div className="focus-quote">
-              “The details are not the details. They make the design.”
-            </div>
-            <div className="focus-author">— Charles Eames</div>
-            <div className="focus-doodle">✺</div>
-          </div>
-        </section>
+        <ModelDropzone onModelChange={handleModelChange} />
       </section>
 
-      {showBrief && (
-        <div className="modal-backdrop" onClick={() => setShowBrief(false)}>
-          <div
-            className="brief-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="brief-title"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <button
-              className="modal-close"
-              onClick={() => setShowBrief(false)}
-              aria-label="Close"
-            >
-              ×
-            </button>
-            <span className="eyebrow">START SOMETHING NEW</span>
-            <h2 id="brief-title">What are we making?</h2>
-            <p>
-              Give your next piece of work a name and we&apos;ll make space for
-              it.
-            </p>
-            <input autoFocus placeholder="Project name" />
-            <div className="modal-actions">
-              <button
-                className="text-button"
-                onClick={() => setShowBrief(false)}
-              >
-                Cancel
-              </button>
-              <button
-                className="new-button"
-                onClick={() => setShowBrief(false)}
-              >
-                Create project <span>→</span>
-              </button>
-            </div>
-          </div>
+      <section className="intro-band reveal" id="about">
+        <p className="section-index">/ 00 — The short version</p>
+        <div className="intro-statement">
+          We turn <span>ambition</span> into brands people want to spend time
+          with.
         </div>
-      )}
+        <div className="intro-detail">
+          <p>
+            We work with founders, teams, and kindred spirits at the moment an
+            idea needs to become real.
+          </p>
+          <a
+            className="circle-link"
+            href="#contact"
+            aria-label="Start a conversation"
+          >
+            <ArrowUpRight size={21} />
+          </a>
+        </div>
+      </section>
+
+      <section className="services-section" id="services">
+        <div className="section-heading reveal">
+          <div>
+            <p className="section-index">/ 01 — What we do</p>
+            <h2>
+              Useful, beautiful,
+              <br />
+              <em>built to last.</em>
+            </h2>
+          </div>
+          <p className="heading-note">
+            A small studio for big swings.
+            <br />
+            Strategy through shipped product.
+          </p>
+        </div>
+        <div className="service-list">
+          {services.map((service) => (
+            <article className="service-card reveal" key={service.number}>
+              <span className="service-number">{service.number}</span>
+              <div className="service-main">
+                <h3>{service.title}</h3>
+                <p>{service.copy}</p>
+              </div>
+              <div className="service-meta">
+                <span>{service.tag}</span>
+                <ArrowUpRight size={18} aria-hidden="true" />
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="work-section" id="work">
+        <div className="section-heading reveal">
+          <div>
+            <p className="section-index">/ 02 — Selected work</p>
+            <h2>
+              Made with
+              <br />
+              <em>good people.</em>
+            </h2>
+          </div>
+          <a className="text-link" href="#contact">
+            All projects <ArrowUpRight size={15} />
+          </a>
+        </div>
+        <div className="project-list">
+          {projects.map((project, index) => (
+            <article className="project-row reveal" key={project.client}>
+              <div className={`project-visual ${project.color}`}>
+                <span className={`project-shape project-shape-${index + 1}`} />
+              </div>
+              <div className="project-info">
+                <span className="project-client">{project.client}</span>
+                <h3>{project.title}</h3>
+                <span className="project-type">{project.type}</span>
+              </div>
+              <ArrowUpRight
+                className="project-arrow"
+                size={22}
+                aria-hidden="true"
+              />
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="belief-section reveal">
+        <div className="belief-mark">B</div>
+        <p>Good work should feel like a door opening.</p>
+        <span>Not a performance. An invitation.</span>
+      </section>
+
+      <footer className="agency-footer" id="contact">
+        <div className="footer-top">
+          <div>
+            <p className="section-index">/ 03 — Let&apos;s make something</p>
+            <h2>
+              Have a good
+              <br />
+              <em>one in mind?</em>
+            </h2>
+          </div>
+          <a className="footer-cta" href="mailto:hello@badger.studio">
+            hello@badger.studio <ArrowUpRight size={19} />
+          </a>
+        </div>
+        <div className="footer-bottom">
+          <a className="agency-brand" href="#top">
+            <StudioMark />
+            <span>
+              badger<span className="brand-muted">studio</span>
+            </span>
+          </a>
+          <span>© 2026 Badger Studio</span>
+          <span>Brooklyn · Everywhere</span>
+        </div>
+      </footer>
     </main>
   );
 }
